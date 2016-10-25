@@ -22,6 +22,8 @@
 package com.github.gorbin.asne.core;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -131,6 +133,26 @@ public class OAuthActivity extends Activity {
                 intent.setAction(description);
                 setResult(RESULT_CANCELED, intent);
                 finish();
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(OAuthActivity.this);
+                builder.setMessage("У Вас возникла SSl ошибка. Желаете ли Вы продолжить?");
+                builder.setPositiveButton("Продолжить", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.proceed();
+                    }
+                });
+                builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.cancel();
+                    }
+                });
+                final AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
         webView.loadUrl(paramUrlToLoad);
